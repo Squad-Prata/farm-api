@@ -17,4 +17,12 @@
 ```
 npx prisma migrate dev --name init
 ```
+- Agora é hora de iniciar o servidor, com o comando abaixo:
+```
+node \src\index.js
+```
+- OBS: caso dê erro, use a barra normal ao invés de barra invertida:
+```
+node /src/index.js
+```
 - Pronto, o banco está disponível e as tabelas também, hora de codar :)
