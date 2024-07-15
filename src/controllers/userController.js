@@ -48,6 +48,18 @@ exports.buscarTodosUsuarios = async (req, res) => {
   }
 };
 
+exports.atualizarCliente = async (req, res) => {
+  try {
+    const cliente = await prisma.cliente.update({
+      where: { id: Number(req.params.id) },
+      data: req.body,
+    });
+    res.status(200).json(cliente);
+  } catch (error) {
+    res.status(400).json({ error: 'Erro ao atualizar' });
+  }
+};
+
 exports.deletarUsuario = async (req, res) => {
   const { id } = req.params;
 
@@ -61,6 +73,6 @@ exports.deletarUsuario = async (req, res) => {
     res.status(200).json({ message: 'Usuário deletado com sucesso' });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao deletar usuário' });
-  }
+    res.status(500).json({ error: 'Erro ao deletar usuário' });
+  }
 };

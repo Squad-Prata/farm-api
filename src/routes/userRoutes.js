@@ -8,6 +8,8 @@ router.get('/usuarios/:id', userController.buscarUsuarioPorId);
 
 router.get('/buscarTodosUsuarios', userController.buscarTodosUsuarios);
 
-router.delete('/usuarios/:id', userController.deletarUsuario)
+router.put('/usuarios/:id', auth, userController.atualizarUsuario);
+
+router.delete('/usuarios/:id', userController.deletarUsuario);
 
 module.exports = router;
