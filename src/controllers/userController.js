@@ -12,8 +12,8 @@ exports.registrarUsuario = async (req, res) => {
     });
 
     res.status(201).json(user);
-  } catch (err) {
-    res.status(400).json({ error: err.error });
+  } catch (error) {
+    res.status(400).json({ error: 'Usuário ja cadastrado' });
   }
 };
 
@@ -46,4 +46,21 @@ exports.buscarTodosUsuarios = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Erro ao buscar usuários' });
   }
+};
+
+exports.deletarUsuario = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await prisma.user.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    res.status(200).json({ message: 'Usuário deletado com sucesso' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao deletar usuário' });
+  }
 };
