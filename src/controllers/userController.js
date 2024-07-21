@@ -6,7 +6,7 @@ exports.registrarUsuario = async (req, res) => {
   const { name, cpf, crf, email, password, role } = req.body;
 
   try {
-
+  
     const user = await prisma.user.create({
       data: { name, cpf, crf, email, password, role },
     });
@@ -45,6 +45,24 @@ exports.buscarTodosUsuarios = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao buscar usuários' });
+  }
+};
+
+exports.atualizarUsuario = async (req, res) => {
+  const { id } = req.params;
+  const { name, email, password, role } = req.body;
+
+  try {
+    const data = { name, email, password, role };
+ 
+    const user = await prisma.user.update({
+      where: { id: Number(id) },
+      data,
+    });
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(400).json({ error: 'Usuário não encontrado' });
   }
 };
 

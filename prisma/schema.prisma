@@ -14,46 +14,47 @@ datasource db {
 }
 
 model User {
-  id          Int        @id @default(autoincrement())
-  createdAt   DateTime   @default(now())
-  name        String?
-  cpf         String     @unique
-  crf         String     @unique
-  email       String     @unique
-  password    String
-  role        Role       @default(USER)
-  pharmacy    Pharmacy?  @relation(fields: [pharmacyId], references: [id])
-  pharmacyId  Int?
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  name       String?
+  cpf        String    @unique
+  crf        String    @unique
+  email      String    @unique
+  password   String
+  role       Role      @default(USER)
+  pharmacy   Pharmacy? @relation(fields: [pharmacyId], references: [id])
+  pharmacyId Int?
 }
 
 model Supplier {
-  id          Int        @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   companyName String
   address     String
-  product     Product?   @relation(fields: [productId], references: [id])
+  product     Product?  @relation(fields: [productId], references: [id])
   productId   Int?
-  pharmacy    Pharmacy?  @relation(fields: [pharmacyId], references: [id])
+  pharmacy    Pharmacy? @relation(fields: [pharmacyId], references: [id])
   pharmacyId  Int?
 }
 
 model Manufacturer {
-  id          Int @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   companyName String
   address     String
-  pharmacy    Pharmacy?  @relation(fields: [pharmacyId], references: [id])
+  pharmacy    Pharmacy? @relation(fields: [pharmacyId], references: [id])
   pharmacyId  Int?
 }
 
 model Pharmacy {
-  id            Int @id @default(autoincrement())
-  users         User[]
-  suppliers     Supplier[]
-  manufacturer  Manufacturer[]
-  products      Product[]
+  id           Int            @id @default(autoincrement())
+  users        User[]
+  suppliers    Supplier[]
+  manufacturer Manufacturer[]
+  products     Product[]
 }
 
 model Product {
-  id          Int @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   price       Decimal
   sku         String
   description String
