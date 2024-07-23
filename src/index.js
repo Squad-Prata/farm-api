@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 
+const prisma = require('./config/database')
 const app = express();
 
 app.use(cors());
