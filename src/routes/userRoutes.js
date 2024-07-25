@@ -3,12 +3,23 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const sendPasswordController = require('../controllers/sendPasswordController')
 
+// Cadastros de usuarios
 router.post('/cadastro', userController.registrarUsuario);
+
+// Login do usuarios
+router.post('/login', userController.loginUsuario);
+
+// Buscar de usuarios
 router.get('/usuarios/:id', userController.buscarUsuarioPorId);
-router.get('/buscartodosuarios', userController.buscarTodosUsuarios);
+router.get('/buscartodosusuarios', userController.buscarTodosUsuarios);
+
+// Atualização de cadastro
 router.put('/usuarios/:id', userController.atualizarUsuario);
+
+// Deletar usuarios
 router.delete('/usuarios/:id', userController.deletarUsuario);
 
+// Redefinição de senha E-mail
 router.post('/enviosenha', sendPasswordController.sendPassword);
 
 module.exports = router;

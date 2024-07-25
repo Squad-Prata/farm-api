@@ -5,11 +5,11 @@ require('dotenv').config();
 const prisma = new PrismaClient();
 
 const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: 'smtp.gmail.com',
+    port: 587,
     auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
+        user: 'farmapi119@gmail.com',
+        pass: 'sugdfndfpbxyjtxo',
     },
 });
 
@@ -24,7 +24,7 @@ exports.sendPassword = async (req, res) => {
     const resetLink = `http://localhost:3000/reset-password?email=${email}`;
 
     const mailOptions = {
-        from: process.env.SMTP_FROM,
+        from: 'farmapi119@gmail.com',
         to: user.email,
         subject: 'Redefinição de senha',
         text: `Você está recebendo este e-mail porque você (ou alguém) solicitou a redefinição da senha da sua conta.\n\n
