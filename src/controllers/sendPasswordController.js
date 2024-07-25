@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
 require('dotenv').config();
 
 const prisma = new PrismaClient();
@@ -21,7 +22,7 @@ exports.sendPassword = async (req, res) => {
         return res.status(400).send('Usuário não encontrado');
     }
 
-    const resetLink = `http://localhost:3001/api/reset-password?email=${email}`;
+    const resetLink = `http://localhost:3000/atualizarsenha?email=${email}`;
 
     const mailOptions = {
         from: 'farmapi119@gmail.com',
@@ -40,4 +41,22 @@ exports.sendPassword = async (req, res) => {
         }
         res.status(200).send('Email de redefinição de senha enviado com sucesso');
     });
+};
+
+exports.updatePassword = async (req, res) => {
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+        return res.status(400).send('Usuário não encontrado');
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.update({
+        where: { email },
+        data: { password: hashedPassword },
+    });
+
+    res.status(200).send('Senha atualizada com sucesso');
 };
