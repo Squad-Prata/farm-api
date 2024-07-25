@@ -22,6 +22,7 @@ router.delete('/usuarios/:id', userController.deletarUsuario);
 // Redefinição de senha E-mail
 router.post('/enviosenha', sendPasswordController.sendPassword);
 
+// Atualização de Senha
 router.post('/atualizarsenha', sendPasswordController.updatePassword);
 
 module.exports = router;

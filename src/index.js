@@ -9,7 +9,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-app.use("/api", userRoutes);
+app.use("/", userRoutes);
 
 const PORT = 3001;
 

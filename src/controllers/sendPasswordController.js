@@ -22,7 +22,7 @@ exports.sendPassword = async (req, res) => {
         return res.status(400).send('Usuário não encontrado');
     }
 
-    const resetLink = `http://localhost:3000/atualizarsenha?email=${email}`;
+    const resetLink = `http://localhost:3001/atualizarsenha?email=${email}`;
 
     const mailOptions = {
         from: 'farmapi119@gmail.com',
