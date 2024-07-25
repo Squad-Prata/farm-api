@@ -11,7 +11,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use('/', userRoutes);
 
-const PORT = 3000;
+const PORT = 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
