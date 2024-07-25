@@ -14,6 +14,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^5.16.2",
     "@prisma/client": "^5.17.0",
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
@@ -21,8 +22,7 @@
     "express": "^4.19.2",
     "nodemailer": "^6.9.14",
     "pg": "^8.12.0",
-    "prisma": "^5.16.2",
-    "vercel": "^35.1.0"
+    "prisma": "^5.16.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"

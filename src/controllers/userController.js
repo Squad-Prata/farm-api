@@ -33,7 +33,7 @@ exports.loginUsuario = async (req, res) => {
 
     res.status(200).send('Seja Bem-vindo');
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
   }
 };
 

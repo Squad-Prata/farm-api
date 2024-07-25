@@ -21,7 +21,7 @@ exports.sendPassword = async (req, res) => {
         return res.status(400).send('Usuário não encontrado');
     }
 
-    const resetLink = `http://localhost:3000/reset-password?email=${email}`;
+    const resetLink = `http://localhost:3001/api/reset-password?email=${email}`;
 
     const mailOptions = {
         from: 'farmapi119@gmail.com',
@@ -33,7 +33,7 @@ exports.sendPassword = async (req, res) => {
            Se você não solicitou isso, por favor, ignore este e-mail e sua senha permanecerá a mesma.\n`,
     };
 
-    transporter.sendMail(mailOptions, (error, response) => {
+    transporter.sendMail(mailOptions, (error, res) => {
         if (error) {
             console.error('Erro ao enviar email', error);
             return res.status(500).send('Erro ao enviar email');
