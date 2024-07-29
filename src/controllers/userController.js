@@ -1,5 +1,6 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const prisma = new PrismaClient();
 
@@ -31,14 +32,18 @@ exports.loginUsuario = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
 
-    res.status(200).send('Seja Bem-vindo');
+    const token = jwt.sign({ id: user.id, role: user.role }, '0e581d8c-a675-4e61-976a-d7a9f9ed2b02', {
+      expiresIn: '5d',
+    });
+    res.header('Authorization', token).send({ id: user.id, email, password: user.password, token });
+
   } catch (error) {
     res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
   }
 };
 
 exports.buscarUsuarioPorId = async (req, res) => {
-  const { id } = req.params;
+  const { id, token } = req.params;
 
   try {
     const user = await prisma.user.findUnique({
