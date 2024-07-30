@@ -1,14 +1,22 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+const passwordTemp = require('../services/emailServices');
+const authConfig = require('../config/auth');
 
 const prisma = new PrismaClient();
+
+const generateTemporaryPassword = () => {
+  return crypto.randomBytes(8).toString('hex');
+};
 
 exports.registrarUsuario = async (req, res) => {
   const { name, cpf, crf, email, password, cargo, role } = req.body;
 
   try {
 
+    const tempPassword = generateTemporaryPassword();
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -16,7 +24,21 @@ exports.registrarUsuario = async (req, res) => {
       data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
     });
 
-    res.status(201).json(user);
+    const mailOptions = {
+      from: 'farmapi119@gmail.com',
+      to: email,
+      subject: 'Bem-vindo!',
+      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${tempPassword}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`
+    };
+
+    passwordTemp.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Erro ao enviar email.');
+      }
+      console.log('Email enviado: ' + info.response);
+      res.status(201).json(user);
+    });
   } catch (error) {
     res.status(400).json({ error: 'Usuário ja cadastrado' });
   }
@@ -32,7 +54,7 @@ exports.loginUsuario = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, '0e581d8c-a675-4e61-976a-d7a9f9ed2b02', {
+    const token = jwt.sign({ id: user.id, role: user.role }, authConfig.secret, {
       expiresIn: '5d',
     });
     res.header('Authorization', token).send({ id: user.id, email, password: user.password, token });

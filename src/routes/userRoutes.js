@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const sendPasswordController = require('../controllers/sendPasswordController');
-const autheConfig = require('../middlewares/auth')
+const autheConfig = require('../middlewares/auth');
 
 // Cadastros de usuarios
 router.post('/cadastro', userController.registrarUsuario);

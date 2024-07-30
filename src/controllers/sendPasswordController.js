@@ -1,18 +1,10 @@
 const { PrismaClient } = require('@prisma/client');
-const nodemailer = require('nodemailer');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
+const emailsend = require('../services/emailServices');
 
 const prisma = new PrismaClient();
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    auth: {
-        user: 'farmapi119@gmail.com',
-        pass: 'sugdfndfpbxyjtxo',
-    },
-});
 
 exports.sendPassword = async (req, res) => {
     const { email } = req.body;
@@ -34,7 +26,7 @@ exports.sendPassword = async (req, res) => {
            Se você não solicitou isso, por favor, ignore este e-mail e sua senha permanecerá a mesma.\n`,
     };
 
-    transporter.sendMail(mailOptions, (error, res) => {
+    emailsend.sendMail(mailOptions, (error, res) => {
         if (error) {
             console.error('Erro ao enviar email', error);
             return res.status(500).send('Erro ao enviar email');
