@@ -1,22 +1,17 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const passwordTemp = require('../services/emailServices');
 const authConfig = require('../config/auth');
 
 const prisma = new PrismaClient();
 
-const generateTemporaryPassword = () => {
-  return crypto.randomBytes(8).toString('hex');
-};
 
 exports.registrarUsuario = async (req, res) => {
   const { name, cpf, crf, email, password, cargo, role } = req.body;
 
   try {
 
-    const tempPassword = generateTemporaryPassword();
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -28,7 +23,7 @@ exports.registrarUsuario = async (req, res) => {
       from: 'farmapi119@gmail.com',
       to: email,
       subject: 'Bem-vindo!',
-      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${tempPassword}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`
+      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`
     };
 
     passwordTemp.sendMail(mailOptions, (error, info) => {
