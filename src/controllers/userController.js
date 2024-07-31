@@ -3,17 +3,18 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const passwordTemp = require('../services/emailServices');
 const authConfig = require('../config/auth');
+const { generatePassword, hashPassword } = require('../utils/passwordUtils');
 
 const prisma = new PrismaClient();
 
 
 exports.registrarUsuario = async (req, res) => {
-  const { name, cpf, crf, email, password, cargo, role } = req.body;
+  const { name, cpf, crf, email, cargo, role } = req.body;
 
   try {
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const password = generatePassword();
+    const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
