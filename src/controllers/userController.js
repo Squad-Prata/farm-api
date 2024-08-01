@@ -96,14 +96,10 @@ exports.buscarTodosUsuarios = async (req, res) => {
 exports.atualizarUsuario = async (req, res) => {
   const { id } = req.params;
   const { name, email, cpf, crf, password, cargo, role } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const data = { name, email, cpf, crf, password, cargo, role };
-
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(password, salt);
-    }
+    const data = { name, email, cpf, crf, password:hashedPassword, cargo, role };
 
     const user = await prisma.user.update({
       where: { id: Number(id) },
