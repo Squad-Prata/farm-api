@@ -1,21 +1,40 @@
 const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const passwordTemp = require('../services/emailServices');
+const authConfig = require('../config/auth');
+const { generatePassword, hashPassword } = require('../utils/passwordUtils');
 
 const prisma = new PrismaClient();
 
+
 exports.registrarUsuario = async (req, res) => {
-  const { name, cpf, crf, email, password, cargo, role } = req.body;
+  const { name, cpf, crf, email, cargo, role } = req.body;
 
   try {
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const password = generatePassword();
+    const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
       data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
     });
 
-    res.status(201).json(user);
+    const mailOptions = {
+      from: 'farmapi119@gmail.com',
+      to: email,
+      subject: 'Bem-vindo!',
+      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`
+    };
+
+    passwordTemp.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Erro ao enviar email.');
+      }
+      console.log('Email enviado: ' + info.response);
+      res.status(201).json(user);
+    });
   } catch (error) {
     res.status(400).json({ error: 'Usuário ja cadastrado' });
   }
@@ -31,14 +50,18 @@ exports.loginUsuario = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(400).json({ message: 'Usuário ou senha inválidos.' });
 
-    res.status(200).send('Seja Bem-vindo');
+    const token = jwt.sign({ id: user.id, role: user.role }, authConfig.secret, {
+      expiresIn: '5d',
+    });
+    res.header('Authorization', token).send({ id: user.id, email, password: user.password, token });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
   }
 };
 
 exports.buscarUsuarioPorId = async (req, res) => {
-  const { id } = req.params;
+  const { id, token } = req.params;
 
   try {
     const user = await prisma.user.findUnique({
@@ -73,14 +96,10 @@ exports.buscarTodosUsuarios = async (req, res) => {
 exports.atualizarUsuario = async (req, res) => {
   const { id } = req.params;
   const { name, email, cpf, crf, password, cargo, role } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const data = { name, email, cpf, crf, password, cargo, role };
-
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      data.password = await bcrypt.hash(password, salt);
-    }
+    const data = { name, email, cpf, crf, password:hashedPassword, cargo, role };
 
     const user = await prisma.user.update({
       where: { id: Number(id) },
