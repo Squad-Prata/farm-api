@@ -26,6 +26,7 @@ model User {
   role       Role      @default(USER)
   pharmacy   Pharmacy? @relation(fields: [pharmacyId], references: [id])
   pharmacyId Int?
+  ativo      Boolean   @default(true)
 }
 
 model Supplier {

@@ -26,4 +26,7 @@ router.post('/enviosenha', sendPasswordController.sendPassword);
 // Atualização de Senha
 router.post('/atualizarsenha', sendPasswordController.updatePassword);
 
+// Inativar usuarios
+router.patch('/usuarios/inativar/:id', userController.inativarUsuario);
+
 module.exports = router;
