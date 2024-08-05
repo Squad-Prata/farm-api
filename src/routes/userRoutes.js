@@ -35,8 +35,8 @@ router.delete(
 // Redefinição de senha E-mail
 router.post("/recuperar-senha", sendPasswordController.sendPassword);
 
-// Atualização de Senha
-router.post("/atualizarsenha", sendPasswordController.updatePassword);
+// Nova senha
+router.post("/nova-senha", sendPasswordController.updatePassword);
 
 // Inativar usuarios
 router.patch("/usuarios/inativar/:id", userController.inativarUsuario);
