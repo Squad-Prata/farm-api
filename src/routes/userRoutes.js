@@ -24,7 +24,7 @@ router.delete('/usuarios/:id', autheConfig.authenticateToken, userController.del
 router.post('/enviosenha', sendPasswordController.sendPassword);
 
 // Atualização de Senha
-router.post('/atualizarsenha', sendPasswordController.updatePassword);
+router.post('/atualizarsenha/:email', sendPasswordController.updatePassword);
 
 // Inativar usuarios
 router.patch('/usuarios/inativar/:id', userController.inativarUsuario);
