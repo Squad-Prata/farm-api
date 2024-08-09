@@ -21,10 +21,10 @@ router.put('/usuarios/:id', autheConfig.authenticateToken, userController.atuali
 router.delete('/usuarios/:id', autheConfig.authenticateToken, userController.deletarUsuario);
 
 // Redefinição de senha E-mail
-router.post('/enviosenha', sendPasswordController.sendPassword);
+router.post('/redefinir-senha', sendPasswordController.sendPassword);
 
 // Atualização de Senha
-router.post('/atualizarsenha/:email', sendPasswordController.updatePassword);
+router.post('/redefinir-senha/:email', sendPasswordController.updatePassword);
 
 // Inativar usuarios
 router.patch('/usuarios/inativar/:id', userController.inativarUsuario);
