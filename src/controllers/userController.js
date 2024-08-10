@@ -8,6 +8,37 @@ const { generatePassword, hashPassword } = require('../utils/passwordUtils');
 const prisma = new PrismaClient();
 
 
+exports.registrarAdmin = async (req, res) => {
+  const { name, cpf, crf, email, password, cargo, role } = req.body;
+
+  try {
+
+    const hashedPassword = await hashPassword(password);
+
+    const user = await prisma.user.create({
+      data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
+    });
+
+    const mailOptions = {
+      from: 'farmapi119@gmail.com',
+      to: email,
+      subject: 'Bem-vindo!',
+      text: `Olá ${name},\n\nSeja Benm-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe`
+    };
+
+    passwordTemp.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error(error);
+        return res.status(500).send('Erro ao enviar email.');
+      }
+      console.log('Email enviado: ' + info.response);
+      res.status(201).json(user);
+    });
+  } catch (error) {
+    res.status(400).json({ error: 'Usuário ja cadastrado' });
+  }
+};
+
 exports.registrarUsuario = async (req, res) => {
   const { name, cpf, crf, email, cargo, role } = req.body;
 

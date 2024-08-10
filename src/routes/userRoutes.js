@@ -5,6 +5,9 @@ const sendPasswordController = require('../controllers/sendPasswordController');
 const autheConfig = require('../middlewares/auth');
 
 // Cadastros de usuarios
+router.post('/cadastro-admin', userController.registrarAdmin);
+
+// Cadastros de usuarios
 router.post('/cadastro', userController.registrarUsuario);
 
 // Login do usuarios
