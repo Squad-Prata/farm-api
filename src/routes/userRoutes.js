@@ -3,12 +3,14 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const sendPasswordController = require('../controllers/sendPasswordController');
 const autheConfig = require('../middlewares/auth');
+const multer = require('multer');
+const path = require('path');
 
 // Cadastros de usuarios
-router.post('/cadastro-admin', userController.registrarAdmin);
+router.post('/cadastro-admin', upload.single('imagem'), userController.registrarAdmin);
 
 // Cadastros de usuarios
-router.post('/cadastro', userController.registrarUsuario);
+router.post('/cadastro', upload.single('imagem'), userController.registrarUsuario);
 
 // Login do usuarios
 router.post('/login', userController.loginUsuario);
@@ -31,5 +33,18 @@ router.post('/redefinir-senha/:email', sendPasswordController.updatePassword);
 
 // Inativar usuarios
 router.patch('/usuarios/inativar/:id', userController.inativarUsuario);
+
+
+// Configurar o multer para armazenar as imagens na pasta 'uploads'
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, 'uploads/'); 
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + path.extname(file.originalname)); 
+    }
+  });
+
+  const upload = multer({ storage: storage });
 
 module.exports = router;

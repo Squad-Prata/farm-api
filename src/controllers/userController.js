@@ -10,6 +10,7 @@ const prisma = new PrismaClient();
 
 exports.registrarAdmin = async (req, res) => {
   const { name, cpf, crf, email, password, cargo, role } = req.body;
+  const imagem = req.file ? req.file.path : null;
 
   try {
 
@@ -41,6 +42,7 @@ exports.registrarAdmin = async (req, res) => {
 
 exports.registrarUsuario = async (req, res) => {
   const { name, cpf, crf, email, cargo, role } = req.body;
+  const imagem = req.file ? req.file.path : null;
 
   try {
 
@@ -130,7 +132,7 @@ exports.atualizarUsuario = async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const data = { name, email, cpf, crf, password:hashedPassword, cargo, role };
+    const data = { name, email, cpf, crf, password: hashedPassword, cargo, role };
 
     const user = await prisma.user.update({
       where: { id: Number(id) },
@@ -165,13 +167,13 @@ exports.inativarUsuario = async (req, res) => {
 
   try {
     const user = await prisma.user.update({
-      where: { id: Number(id) }, 
-      data: { ativo: false }, 
+      where: { id: Number(id) },
+      data: { ativo: false },
     });
 
     res.status(200).json({ message: 'Usuário inativado com sucesso' });
   } catch (error) {
-    
+
     res.status(500).json({ error: 'Erro ao inativar usuário' });
   }
 };
