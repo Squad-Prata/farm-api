@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 app.use("/", userRoutes);
+app.use('/uploads', express.static('uploads'));
 
 const PORT = 3001;
 
