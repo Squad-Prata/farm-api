@@ -2,12 +2,13 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const userRoutes = require("./routes/userRoutes");
+const { env } = require("./env");
 
 const app = express();
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: env.FRONTEND_URL,
     credentials: true,
   })
 );
@@ -17,7 +18,7 @@ app.use(bodyParser.json());
 app.use("/", userRoutes);
 app.use("/uploads", express.static("uploads"));
 
-const PORT = process.env.PORT || 3001;
+const PORT = env.PORT || 3001;
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
