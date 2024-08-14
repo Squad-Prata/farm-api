@@ -6,7 +6,12 @@ const userRoutes = require("./routes/userRoutes");
 const prisma = require("./config/database");
 const app = express();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: process.env.FRONTEND_URL,
+    credentials: true
+  }
+));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use("/", userRoutes);
