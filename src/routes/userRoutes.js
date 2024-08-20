@@ -18,6 +18,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
+//Saber se esta online
+router.get("/", (_req, res) => res.json({ message: "© 2024 - Squad Prata está Online!" }))
+
 // Admin register
 router.post(
   "/admin-register",
