@@ -4,6 +4,7 @@ const { env } = require("../env");
 const transporter = nodemailer.createTransport({
   host: env.SMTP_HOST,
   port: env.SMTP_PORT,
+  secure: false, // usar SSL
   to: [
     {
       email: env.SMTP_FROM,
