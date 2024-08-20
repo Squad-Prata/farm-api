@@ -1,49 +1,61 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controllers/userController');
-const sendPasswordController = require('../controllers/sendPasswordController');
-const autheConfig = require('../middlewares/auth');
-const multer = require('multer');
-const path = require('path');
+const userController = require("../controllers/userController");
+const sendPasswordController = require("../controllers/sendPasswordController");
+const autheConfig = require("../middlewares/auth");
+const multer = require("multer");
+const path = require("path");
 
 // Configurar o multer para armazenar as imagens na pasta 'uploads'
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); 
+    cb(null, "uploads/");
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); 
-  }
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
 });
 
 const upload = multer({ storage: storage });
 
-// Cadastros de usuarios
-router.post('/cadastro-admin', upload.single('imagem'), userController.registrarAdmin);
+// Admin register
+router.post(
+  "/admin-register",
+  upload.single("image"),
+  userController.adminRegister
+);
 
-// Cadastros de usuarios
-router.post('/cadastro', upload.single('imagem'), userController.registrarUsuario);
+// Users Register
+router.post("/register", upload.single("image"), userController.userRegister);
 
-// Login do usuarios
-router.post('/login', userController.loginUsuario);
+// Users Login
+router.post("/login", userController.userLogin);
 
-// Buscar de usuarios
-router.get('/usuarios/:id', autheConfig.authenticateToken, userController.buscarUsuarioPorId);
-router.get('/buscartodosusuarios', userController.buscarTodosUsuarios);
+// Users id search
+router.get("/user/:id", autheConfig.authenticateToken, userController.userId);
+router.get("/users", userController.users);
 
-// Atualização de cadastro
-router.put('/usuarios/:id', autheConfig.authenticateToken, userController.atualizarUsuario);
+// Register Update
+router.put(
+  "/user/:id",
+  autheConfig.authenticateToken,
+  userController.userUpdate
+);
 
-// Deletar usuarios
-router.delete('/usuarios/:id', autheConfig.authenticateToken, userController.deletarUsuario);
+// User Delete
+router.delete(
+  "/user/:id",
+  autheConfig.authenticateToken,
+  userController.userDelete
+);
 
-// Redefinição de senha E-mail
-router.post('/redefinir-senha', sendPasswordController.sendPassword);
+// Password Reset for E-mail
+router.post("/password-reset", sendPasswordController.passwordReset);
 
-// Atualização de Senha
-router.post('/redefinir-senha/:email', sendPasswordController.updatePassword);
+// Password Update
+router.post("/password-update/:email", sendPasswordController.passwordUpdate);
 
-// Inativar usuarios
-router.patch('/usuarios/inativar/:id', userController.inativarUsuario);
+// User Inative
+router.patch("/users/inactivate/:id", userController.userInactivate);
 
 module.exports = router;
