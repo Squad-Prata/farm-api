@@ -34,7 +34,8 @@ exports.adminRegister = async (req, res) => {
       res.status(201).json(user);
     });
   } catch (error) {
-    res.status(400).json({ error: "Usuário ja cadastrado" });
+    console.log('Erro: ' + error);
+    res.status(400).json({ error: 'Houve um erro, tente novamente mais tarde.' });
   }
 };
 
@@ -66,7 +67,8 @@ exports.userRegister = async (req, res) => {
       res.status(201).json(user);
     });
   } catch (error) {
-    res.status(400).json({ error: "Usuário ja cadastrado" });
+    console.log(error)
+    res.status(400).json({ error: 'Usuário ja cadastrado' });
   }
 };
 
@@ -77,6 +79,8 @@ exports.userLogin = async (req, res) => {
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user)
       return res.status(400).json({ message: "Usuário ou senha inválidos." });
+
+    if (!password) return res.status(400).json({ message: 'Senha ou Usuário inválidos.' });
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -93,7 +97,8 @@ exports.userLogin = async (req, res) => {
       .header("Authorization", token)
       .send({ id: user.id, email, password: user.password, token });
   } catch (error) {
-    res.status(500).json({ message: "Erro no Servidor, tente novamente" });
+    console.log(error)
+    res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
   }
 };
 
