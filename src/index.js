@@ -6,9 +6,12 @@ const { env } = require("./env");
 
 const app = express();
 
+// Lista de domínios permitidos
+const allowedOrigins = ['https://staging-farmapp.vercel.app', 'http://localhost:3000'];
+
 app.use(
   cors({
-    origin: "https://staging-farmapp.vercel.app",
+    origin: allowedOrigins,
     credentials: true,
   })
 );
