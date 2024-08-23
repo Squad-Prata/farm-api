@@ -12,8 +12,9 @@ exports.passwordReset = async (req, res) => {
   if (!user) {
     return res.status(400).send("Usuário não encontrado");
   }
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 
-  const resetLink = `http://localhost:3000/reset-password/${email}`;
+  const resetLink = `${BASE_URL}/reset-password/${email}`;
 
   const mailOptions = {
     from: "farmapi119@gmail.com",
