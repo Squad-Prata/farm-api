@@ -8,14 +8,18 @@ const { generatePassword, hashPassword } = require("../utils/passwordUtils");
 const prisma = new PrismaClient();
 
 exports.adminRegister = async (req, res) => {
-  const { name, cpf, crf, email, password, cargo, role } = req.body;
+  const { name, cpf, crf, email, password, cargo } = req.body;
   const imagem = req.file ? req.file.path : null;
+
+  if (!password) {
+    return res.status(400).json({ message: 'A senha é obrigatória.' });
+  }
 
   try {
     const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
-      data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
+      data: { name, cpf, crf, email, password: hashedPassword, cargo, role: "ADMIN" },
     });
 
     const mailOptions = {
@@ -34,13 +38,17 @@ exports.adminRegister = async (req, res) => {
       res.status(201).json(user);
     });
   } catch (error) {
-    console.log('Erro: ' + error);
-    res.status(400).json({ error: 'Houve um erro, tente novamente mais tarde.' });
+    if (error.code === 'P2002') {
+      const targetField = error.meta.target;
+      res.status(400).json({ erro: `${targetField} já em uso.` });
+    } else {
+      res.status(400).json({ erro: 'Erro de validação' });
+    }
   }
 };
 
 exports.userRegister = async (req, res) => {
-  const { name, cpf, crf, email, cargo, role } = req.body;
+  const { name, cpf, crf, email, cargo } = req.body;
   const imagem = req.file ? req.file.path : null;
 
   try {
@@ -48,7 +56,7 @@ exports.userRegister = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     const user = await prisma.user.create({
-      data: { name, cpf, crf, email, password: hashedPassword, cargo, role },
+      data: { name, cpf, crf, email, password: hashedPassword, cargo },
     });
 
     const mailOptions = {
@@ -67,8 +75,12 @@ exports.userRegister = async (req, res) => {
       res.status(201).json(user);
     });
   } catch (error) {
-    console.log(error)
-    res.status(400).json({ error: 'Usuário ja cadastrado' });
+    if (error.code === 'P2002') {
+      const targetField = error.meta.target;
+      res.status(400).json({ erro: `${targetField} já em uso.` });
+    } else {
+      res.status(400).json({ erro: 'Erro de validação' });
+    }
   }
 };
 

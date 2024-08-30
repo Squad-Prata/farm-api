@@ -3,6 +3,7 @@ const router = express.Router();
 const userController = require("../controllers/userController");
 const sendPasswordController = require("../controllers/sendPasswordController");
 const autheConfig = require("../middlewares/auth");
+const userMiddleware = require("../middlewares/user");
 const multer = require("multer");
 const path = require("path");
 
@@ -25,11 +26,17 @@ router.get("/", (_req, res) => res.json({ message: "© 2024 - Squad Prata está 
 router.post(
   "/admin-register",
   upload.single("image"),
+  userMiddleware.validations,
   userController.adminRegister
 );
 
 // Users Register
-router.post("/register", upload.single("image"), userController.userRegister);
+router.post(
+  "/register",
+  upload.single("image"),
+  userMiddleware.validations,
+  userController.userRegister
+);
 
 // Users Login
 router.post("/login", userController.userLogin);
