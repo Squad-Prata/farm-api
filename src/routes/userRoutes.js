@@ -66,6 +66,10 @@ router.post("/password-reset", sendPasswordController.passwordReset);
 router.post("/password-update/:email", sendPasswordController.passwordUpdate);
 
 // User Inative
-router.patch("/users/inactivate/:id", userController.userInactivate);
+router.patch(
+  "/users/inactivate/:id",
+  autheConfig.authenticateToken,
+  userController.userInactivate
+);
 
 module.exports = router;
