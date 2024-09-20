@@ -1,9 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const passwordTemp = require("../services/emailServices");
-const authConfig = require("../config/auth");
-const { generatePassword, hashPassword } = require("../utils/passwordUtils");
+const passwordTemp = require("../services/emailService.js");
+const authConfig = require("../config/auth.js");
+const { generatePassword, hashPassword } = require("../services/passwordService.js");
 
 const prisma = new PrismaClient();
 

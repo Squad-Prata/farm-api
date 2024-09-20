@@ -1,7 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
-const emailsend = require("../services/emailServices");
+const emailsend = require("../services/emailService.js");
 
 const prisma = new PrismaClient();
 
