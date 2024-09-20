@@ -6,5 +6,7 @@ services:
     restart: always
     environment:
       POSTGRES_DB: db_farm_app
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
     ports:
       - 5432:5432
