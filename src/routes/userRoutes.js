@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const userController = require("../controllers/userController");
-const sendPasswordController = require("../controllers/sendPasswordController");
-const autheConfig = require("../middlewares/auth");
-const userMiddleware = require("../middlewares/user");
+const userController = require("../controllers/userController.js");
+const sendPasswordController = require("../controllers/sendPasswordController.js");
+const autheConfig = require("../middlewares/auth.js");
+const userMiddleware = require("../middlewares/user.js");
 const multer = require("multer");
 const path = require("path");
 
