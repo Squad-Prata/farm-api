@@ -1,4 +1,3 @@
-const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
