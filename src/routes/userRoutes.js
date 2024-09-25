@@ -1,11 +1,12 @@
 const express = require("express");
-const router = express.Router();
 const userController = require("../controllers/userController.js");
 const sendPasswordController = require("../controllers/sendPasswordController.js");
 const autheConfig = require("../middlewares/auth.js");
 const userMiddleware = require("../middlewares/user.js");
 const multer = require("multer");
 const path = require("path");
+
+const router = express.Router();
 
 // Configurar o multer para armazenar as imagens na pasta 'uploads'
 const storage = multer.diskStorage({
