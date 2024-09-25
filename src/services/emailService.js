@@ -6,7 +6,7 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: process.env.SMTP_PORT,
-  secure: false, // usar SSL
+  secure: true, // usar SSL
   to: [
     {
       email: process.env.SMTP_FROM,
