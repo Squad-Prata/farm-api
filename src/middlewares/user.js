@@ -1,37 +1,40 @@
-// Middleware de validação de usuário
+// Constantes de Validação
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const cpfRegex = /^\d{11}$/;
+const crfRegex = /^\d{5,6}$/;
+
+// Funções auxiliares de validação
+const isFieldEmpty = (field) => !field || field.trim().length === 0;
+const isValidEmail = (email) => emailRegex.test(email);
+const isValidCPF = (cpf) => cpfRegex.test(cpf);
+const isValidCRF = (crf) => crfRegex.test(crf);
+
+
 exports.validations = async (req, res, next) => {
   const { name, email, cargo, crf, cpf } = req.body;
 
-  // Validação do campo name
-  if (!name || name.trim().length === 0) {
-    return res.status(400).json({ message: 'O name é obrigatório.' });
+  // Validação de campos obrigatórios
+  if (isFieldEmpty(name)) {
+    return res.status(400).json({ message: "O nome é obrigatório!"});
+  }
+  if (isFieldEmpty(cargo)) {
+    return res.status(400).json({ message: "O cargo é obrigatório!" });
   }
 
-  // Validação do campo email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
-    return res.status(400).json({ message: 'E-mail inválido.' });
+  // Validação de email
+  if (!email || !isValidEmail(email)) {
+    return res.status(400).json({ message: "Email inválido." });
   }
 
-  // Validação do campo cargo
-  if (!cargo || cargo.trim().length === 0) {
-    return res.status(400).json({ message: 'O cargo é obrigatório.' });
+  // Validação de CRF ou CPF (um dos dois deve ser fornecido)
+  if (!crf && !cpf) {
+    return res.status(400).json({ message: "É obrigatório fornecer o CRF ou o CPF." });
   }
-
-  // Validação do campo CRF ou CPF (um dos dois deve ser fornecido)
-  const cpfRegex = /^\d{11}$/;
-  const crfRegex = /^\d{5,6}$/;
-
-  if (!crf || !cpf) {
-    return res.status(400).json({ message: 'É obrigatório fornecer o CRF ou o CPF.' });
+  if (crf && !isValidCRF(crf)) {
+    return res.status(400).json({ message: "CRF inválido. Deve conter de 5 a 6 dígitos." });
   }
-
-  if (cpf && !cpfRegex.test(cpf)) {
-    return res.status(400).json({ message: 'CPF inválido. Deve conter 11 dígitos.' });
-  }
-
-  if (crf && !crfRegex.test(crf)) {
-    return res.status(400).json({ message: 'CRF inválido. Deve conter de 5 a 6 dígitos.' });
+  if (cpf && !isValidCPF(cpf)) {
+    return res.status(400).json({ message: "CPF inválido. Deve conter 11 dígitos." });
   }
 
   next();

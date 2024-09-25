@@ -7,200 +7,152 @@ const { generatePassword, hashPassword } = require("../services/passwordService.
 
 const prisma = new PrismaClient();
 
+// Função para tratamento erros
+const handleError = (res, error, customMessage) => {
+  console.error(error);
+  return res.status(500).json({ message: customMessage || "Erro no servidor." });
+};
+
+// Função para envio de emails
+const sendWelcomeEmail = (email, name, password) => {
+  const mailOptions = {
+    from: "farmapi119@gmail.com",
+    to: email,
+    subject: "Bem-vindo!",
+    text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe Squade Prata`,
+  };
+
+  return passwordTemp.sendMail(mailOptions);
+};
+
+// Função para criar um novo usuário
+const createUser = async (data) => {
+  return prisma.user.create({ data });
+};
+
+// Registro de administrador
 exports.adminRegister = async (req, res) => {
   const { name, cpf, crf, email, password, cargo } = req.body;
-  const imagem = req.file ? req.file.path : null;
 
   if (!password) {
-    return res.status(400).json({ message: 'A senha é obrigatória.' });
+    return res.status(400).json({ message: "A senha é obrigatória." });
   }
 
   try {
     const hashedPassword = await hashPassword(password);
+    const user = await createUser({ name, cpf, crf, email, password: hashedPassword, cargo, role: "ADMIN" });
 
-    const user = await prisma.user.create({
-      data: { name, cpf, crf, email, password: hashedPassword, cargo, role: "ADMIN" },
-    });
+    await sendWelcomeEmail(email, name, password);
 
-    const mailOptions = {
-      from: "farmapi119@gmail.com",
-      to: email,
-      subject: "Bem-vindo!",
-      text: `Olá ${name},\n\nSeja Benm-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe`,
-    };
-
-    passwordTemp.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send("Erro ao enviar email.");
-      }
-      console.log("Email enviado: " + info.response);
-      res.status(201).json(user);
-    });
+    res.status(201).json(user);
   } catch (error) {
-    if (error.code === 'P2002') {
-      const targetField = error.meta.target;
-      res.status(400).json({ erro: `${targetField} já em uso.` });
-    } else {
-      res.status(400).json({ erro: 'Erro de validação' });
-    }
+    return handleError(res, error, error.code === 'P2002' ? `${error.meta.target} já em uso.` : "Erro de validação.");
   }
 };
 
+// Registro de usuário comum
 exports.userRegister = async (req, res) => {
   const { name, cpf, crf, email, cargo } = req.body;
-  const imagem = req.file ? req.file.path : null;
 
   try {
     const password = generatePassword();
     const hashedPassword = await hashPassword(password);
 
-    const user = await prisma.user.create({
-      data: { name, cpf, crf, email, password: hashedPassword, cargo },
-    });
+    const user = await createUser({ name, cpf, crf, email, password: hashedPassword, cargo });
 
-    const mailOptions = {
-      from: "farmapi119@gmail.com",
-      to: email,
-      subject: "Bem-vindo!",
-      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`,
-    };
+    await sendWelcomeEmail(email, name, password);
 
-    passwordTemp.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error(error);
-        return res.status(500).send("Erro ao enviar email.");
-      }
-      console.log("Email enviado: " + info.response);
-      res.status(201).json(user);
-    });
+    res.status(201).json(user);
   } catch (error) {
-    if (error.code === 'P2002') {
-      const targetField = error.meta.target;
-      res.status(400).json({ erro: `${targetField} já em uso.` });
-    } else {
-      res.status(400).json({ erro: 'Erro de validação' });
-    }
+    return handleError(res, error, error.code === 'P2002' ? `${error.meta.target} já em uso.` : "Erro de validação.");
   }
 };
 
+// Login de usuário
 exports.userLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user)
+    if (!user || !password) {
       return res.status(400).json({ message: "Usuário ou senha inválidos." });
-
-    if (!password) return res.status(400).json({ message: 'Senha ou Usuário inválidos.' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch)
+    if (!isMatch) {
       return res.status(400).json({ message: "Usuário ou senha inválidos." });
+    }
 
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      authConfig.secret,
-      {
-        expiresIn: "5d",
-      }
-    );
-    res
-      .header("Authorization", token)
-      .send({ id: user.id, email, password: user.password, token });
+    const token = jwt.sign({ id: user.id, role: user.role }, authConfig.secret, { expiresIn: "5d" });
+    res.header("Authorization", token).json({ id: user.id, email, token });
   } catch (error) {
-    console.log(error)
-    res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
+    return handleError(res, error);
   }
 };
 
+// Buscar usuário por ID
 exports.userId = async (req, res) => {
-  const { id, token } = req.params;
+  const { id } = req.params;
 
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
-    if (!user) {
-      return res.status(404).json({ error: "Usuário não encontrado" });
-    }
+    const user = await prisma.user.findUnique({ where: { id: parseInt(id) } });
+    if (!user) return res.status(404).json({ message: "Usuário não encontrado." });
 
     res.status(200).json(user);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao buscar usuário" });
+    return handleError(res, error);
   }
 };
 
+// Listar todos os usuários
 exports.users = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
-
     res.status(200).json(users);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao buscar usuários" });
+    return handleError(res, error, "Erro ao buscar usuários.");
   }
 };
 
+// Atualizar usuário
 exports.userUpdate = async (req, res) => {
   const { id } = req.params;
   const { name, email, cpf, crf, password, cargo, role } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
-    const data = {
-      name,
-      email,
-      cpf,
-      crf,
-      password: hashedPassword,
-      cargo,
-      role,
-    };
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : undefined;
 
     const user = await prisma.user.update({
       where: { id: Number(id) },
-      data,
+      data: { name, email, cpf, crf, password: hashedPassword, cargo, role },
     });
 
     res.status(200).json(user);
   } catch (error) {
-    res.status(400).json({ error: "Usuário não encontrado" });
+    return handleError(res, error, "Usuário não encontrado.");
   }
 };
 
+// Deletar usuário
 exports.userDelete = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await prisma.user.delete({
-      where: {
-        id: parseInt(id),
-      },
-    });
-
+    await prisma.user.delete({ where: { id: parseInt(id) } });
     res.status(200).json({ message: "Usuário deletado com sucesso" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Erro ao deletar usuário" });
+    return handleError(res, error, "Erro ao deletar usuário.");
   }
 };
 
+// Inativar usuário
 exports.userInactivate = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await prisma.user.update({
-      where: { id: Number(id) },
-      data: { ativo: false },
-    });
-
+    await prisma.user.update({ where: { id: Number(id) }, data: { ativo: false } });
     res.status(200).json({ message: "Usuário inativado com sucesso" });
   } catch (error) {
-    res.status(500).json({ error: "Erro ao inativar usuário" });
+    return handleError(res, error, "Erro ao inativar usuário.");
   }
 };
