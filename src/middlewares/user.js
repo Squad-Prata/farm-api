@@ -27,8 +27,8 @@ exports.validations = async (req, res, next) => {
   }
 
   // Validação de CRF ou CPF (um dos dois deve ser fornecido)
-  if (!crf && !cpf) {
-    return res.status(400).json({ message: "É obrigatório fornecer o CRF ou o CPF." });
+  if (!crf || !cpf) {
+    return res.status(400).json({ message: "É obrigatório fornecer o CRF e o CPF." });
   }
   if (crf && !isValidCRF(crf)) {
     return res.status(400).json({ message: "CRF inválido. Deve conter de 5 a 6 dígitos." });
