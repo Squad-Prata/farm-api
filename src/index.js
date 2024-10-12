@@ -1,8 +1,7 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const userRoutes = require("./routes/userRoutes.js");
-const dotenv = require("dotenv");
+import express from "express";
+import cors from "cors";
+import userRoutes from "./routes/userRoutes.js"
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -10,7 +9,7 @@ const app = express();
 
 // Lista de domínios permitidos
 const allowedOrigins = [
-  'https://staging-farmapp.vercel.app',
+  'https://farm-api-g2zo.onrender.com/',
   'http://localhost:3000'
 ];
 
@@ -22,7 +21,6 @@ app.use(
 );
 
 app.use(express.json());
-app.use(bodyParser.json());
 app.use("/", userRoutes);
 app.use("/uploads", express.static("uploads"));
 
