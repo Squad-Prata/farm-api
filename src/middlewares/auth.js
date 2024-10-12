@@ -1,8 +1,7 @@
-const jwt = require('jsonwebtoken');
-const authConfig = require('../config/auth');
+import jwt from "jsonwebtoken";
+import authConfig from "../config/auth.js";
 
-
-exports.authenticateToken = (req, res, next) => {
+export const authenticateToken = (req, res, next) => {
 
     const token = req.header('Authorization').replace('Bearer ', '');
     if (!token) return res.status(401).send('Access Denied');

@@ -10,7 +10,7 @@ const isValidCPF = (cpf) => cpfRegex.test(cpf);
 const isValidCRF = (crf) => crfRegex.test(crf);
 
 
-exports.validations = async (req, res, next) => {
+export const userValidations = async (req, res, next) => {
   const { name, email, cargo, crf, cpf } = req.body;
 
   // Validação de campos obrigatórios
