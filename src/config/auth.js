@@ -3,4 +3,4 @@ const auth = {
   expiresIn: "3d",
 };
 
-module.exports = auth;
+export default auth;
