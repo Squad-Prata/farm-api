@@ -26,7 +26,7 @@ exports.adminRegister = async (req, res) => {
       from: "farmapi119@gmail.com",
       to: email,
       subject: "Bem-vindo!",
-      text: `Olá ${name},\n\nSeja Benm-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe`,
+      text: `Olá ${name},\n\nSeja Bem-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe`,
     };
 
     passwordTemp.sendMail(mailOptions, (error, info) => {
