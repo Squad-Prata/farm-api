@@ -1,15 +1,14 @@
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const passwordTemp = require("../services/emailService.js");
-const authConfig = require("../config/auth.js");
-const { generatePassword, hashPassword } = require("../services/passwordService.js");
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import passwordTemp from "../services/emailService.js"
+import authConfig from "../config/auth.js";
+import { generatePassword, hashPassword } from "../services/passwordService.js";
 
 const prisma = new PrismaClient();
 
-exports.adminRegister = async (req, res) => {
+const adminRegister = async (req, res) => {
   const { name, cpf, crf, email, password, cargo } = req.body;
-  const imagem = req.file ? req.file.path : null;
 
   if (!password) {
     return res.status(400).json({ message: 'A senha é obrigatória.' });
@@ -47,10 +46,9 @@ exports.adminRegister = async (req, res) => {
   }
 };
 
-exports.userRegister = async (req, res) => {
+const userRegister = async (req, res) => {
   const { name, cpf, crf, email, cargo } = req.body;
-  const imagem = req.file ? req.file.path : null;
-
+  
   try {
     const password = generatePassword();
     const hashedPassword = await hashPassword(password);
@@ -63,7 +61,7 @@ exports.userRegister = async (req, res) => {
       from: "farmapi119@gmail.com",
       to: email,
       subject: "Bem-vindo!",
-      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe`,
+      text: `Olá ${name},\n\nSua conta foi criada com sucesso. Sua senha provisória é: ${password}\n\nPor favor, altere sua senha após o primeiro login.\n\nAtenciosamente,\nEquipe Equipe Squad Prata`,
     };
 
     passwordTemp.sendMail(mailOptions, (error, info) => {
@@ -84,7 +82,7 @@ exports.userRegister = async (req, res) => {
   }
 };
 
-exports.userLogin = async (req, res) => {
+const userLogin = async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -114,8 +112,8 @@ exports.userLogin = async (req, res) => {
   }
 };
 
-exports.userId = async (req, res) => {
-  const { id, token } = req.params;
+const userId = async (req, res) => {
+  const { id } = req.params;
 
   try {
     const user = await prisma.user.findUnique({
@@ -135,7 +133,7 @@ exports.userId = async (req, res) => {
   }
 };
 
-exports.users = async (req, res) => {
+const users = async (req, res) => {
   try {
     const users = await prisma.user.findMany();
 
@@ -146,7 +144,7 @@ exports.users = async (req, res) => {
   }
 };
 
-exports.userUpdate = async (req, res) => {
+const userUpdate = async (req, res) => {
   const { id } = req.params;
   const { name, email, cpf, crf, password, cargo, role } = req.body;
   const hashedPassword = await bcrypt.hash(password, 10);
@@ -173,11 +171,11 @@ exports.userUpdate = async (req, res) => {
   }
 };
 
-exports.userDelete = async (req, res) => {
+const userDelete = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const user = await prisma.user.delete({
+    await prisma.user.delete({
       where: {
         id: parseInt(id),
       },
@@ -190,7 +188,7 @@ exports.userDelete = async (req, res) => {
   }
 };
 
-exports.userInactivate = async (req, res) => {
+const userInactivate = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -204,3 +202,5 @@ exports.userInactivate = async (req, res) => {
     res.status(500).json({ error: "Erro ao inativar usuário" });
   }
 };
+
+export default { adminRegister, userRegister, userLogin, userId, userUpdate, users, userDelete, userInactivate };

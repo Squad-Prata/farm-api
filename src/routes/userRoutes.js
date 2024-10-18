@@ -1,11 +1,13 @@
-const express = require("express");
+import express from "express";
+import userController from "../controllers/userController.js";
+import { authenticateToken } from "../middlewares/auth.js";
+import { userValidations } from "../middlewares/user.js";
+import sendPasswordController from "../controllers/sendPasswordController.js";
+import multer from "multer";
+import path from "path";
+
+
 const router = express.Router();
-const userController = require("../controllers/userController.js");
-const sendPasswordController = require("../controllers/sendPasswordController.js");
-const autheConfig = require("../middlewares/auth.js");
-const userMiddleware = require("../middlewares/user.js");
-const multer = require("multer");
-const path = require("path");
 
 // Configurar o multer para armazenar as imagens na pasta 'uploads'
 const storage = multer.diskStorage({
@@ -23,18 +25,16 @@ const upload = multer({ storage: storage });
 router.get("/", (_req, res) => res.json({ message: "© 2024 - Squad Prata está Online!" }))
 
 // Admin register
-router.post(
-  "/admin-register",
+router.post("/admin-register", 
   upload.single("image"),
-  userMiddleware.validations,
+  userValidations,
   userController.adminRegister
 );
 
 // Users Register
-router.post(
-  "/register",
+router.post("/register",
   upload.single("image"),
-  userMiddleware.validations,
+  userValidations,
   userController.userRegister
 );
 
@@ -42,20 +42,24 @@ router.post(
 router.post("/login", userController.userLogin);
 
 // Users id search
-router.get("/user/:id", autheConfig.authenticateToken, userController.userId);
+router.get("/user/:id", 
+  authenticateToken, 
+  userController.userId
+);
+
 router.get("/users", userController.users);
 
 // Register Update
 router.put(
   "/user/:id",
-  autheConfig.authenticateToken,
+  authenticateToken,
   userController.userUpdate
 );
 
 // User Delete
 router.delete(
   "/user/:id",
-  autheConfig.authenticateToken,
+  authenticateToken,
   userController.userDelete
 );
 
@@ -68,8 +72,8 @@ router.post("/password-update/:email", sendPasswordController.passwordUpdate);
 // User Inative
 router.patch(
   "/users/inactivate/:id",
-  autheConfig.authenticateToken,
+  authenticateToken,
   userController.userInactivate
 );
 
-module.exports = router;
+export default router;

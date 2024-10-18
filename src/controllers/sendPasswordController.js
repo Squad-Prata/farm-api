@@ -1,11 +1,14 @@
-const { PrismaClient } = require("@prisma/client");
-const bcrypt = require("bcrypt");
-require("dotenv").config();
-const emailsend = require("../services/emailService.js");
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcrypt"
+import emailSend from "../services/emailService.js"
+import dotenv from "dotenv";
+
+dotenv.config();
+
 
 const prisma = new PrismaClient();
 
-exports.passwordReset = async (req, res) => {
+const passwordReset = async (req, res) => {
   const { email } = req.body;
 
   const user = await prisma.user.findUnique({ where: { email } });
@@ -35,7 +38,7 @@ exports.passwordReset = async (req, res) => {
 
   res.status(200).send("Email de redefinição de senha enviado com sucesso");
 
-  emailsend.sendMail(mailOptions, (error, res) => {
+  emailSend.sendMail(mailOptions, (error, res) => {
     if (error) {
       console.error("Erro ao enviar email", error);
       return res.status(500).send("Erro ao enviar email");
@@ -43,7 +46,7 @@ exports.passwordReset = async (req, res) => {
   });
 };
 
-exports.passwordUpdate = async (req, res) => {
+const  passwordUpdate = async (req, res) => {
   const { password } = req.body;
   const { email } = req.params;
 
@@ -61,3 +64,6 @@ exports.passwordUpdate = async (req, res) => {
 
   res.status(200).send("Senha atualizada com sucesso");
 };
+
+
+export default { passwordReset, passwordUpdate };
