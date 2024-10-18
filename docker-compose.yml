@@ -5,8 +5,8 @@ services:
     container_name: crud_farm_app
     restart: always
     environment:
-      POSTGRES_DB: db_farm_app
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - 5432:5432
