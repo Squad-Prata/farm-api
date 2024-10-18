@@ -2,10 +2,12 @@
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const cpfRegex = /^\d{11}$/;
 const crfRegex = /^\d{5,6}$/;
+const nameRegex = /^[A-Za-z\s]{3,50}$/;
 
 // Funções auxiliares de validação
 const isFieldEmpty = (field) => !field || field.trim().length === 0;
 const isValidEmail = (email) => emailRegex.test(email);
+const isValidName = (name) => nameRegex.test(name);
 const isValidCPF = (cpf) => cpfRegex.test(cpf);
 const isValidCRF = (crf) => crfRegex.test(crf);
 
@@ -16,6 +18,9 @@ export const userValidations = async (req, res, next) => {
   // Validação de campos obrigatórios
   if (isFieldEmpty(name)) {
     return res.status(400).json({ message: "O nome é obrigatório!"});
+  }
+  if(!isValidName(name)){
+    return res.status(400).json({message: "Nome inserido é inválido!"});
   }
   if (isFieldEmpty(cargo)) {
     return res.status(400).json({ message: "O cargo é obrigatório!" });
