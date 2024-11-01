@@ -47,7 +47,7 @@ router.get("/user/:id",
   userController.userId
 );
 
-router.get("/users", userController.users);
+router.get("/users", authenticateToken, userController.users);
 
 // Register Update
 router.put(
