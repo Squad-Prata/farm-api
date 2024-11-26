@@ -9,9 +9,11 @@ const app = express();
 
 // Lista de domínios permitidos
 const allowedOrigins = [
-  'https://farm-api-g2zo.onrender.com/',
+  process.env.NEXT_PUBLIC_API_BASE_URL,
+  process.env.FRONTEND_URL,
   'http://localhost:3000'
 ];
+
 
 app.use(
   cors({

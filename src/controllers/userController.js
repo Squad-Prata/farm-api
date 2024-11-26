@@ -25,7 +25,7 @@ const adminRegister = async (req, res) => {
       from: "farmapi119@gmail.com",
       to: email,
       subject: "Bem-vindo!",
-      text: `Olá ${name},\n\nSeja Benm-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe Squad Prata`,
+      text: `Olá ${name},\n\nSeja Bem-vindo.\n\nUse seu E-mail\n\nE sua senha: ${password}\n\n, Para ter acesso a sua conta.\n\nAtenciosamente,\nEquipe`,
     };
 
     passwordTemp.sendMail(mailOptions, (error, info) => {
@@ -87,8 +87,7 @@ const userLogin = async (req, res) => {
 
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user)
-      return res.status(400).json({ message: "Usuário ou senha inválidos." });
+    if (!user) return res.status(400).json({ message: "Usuário ou senha inválidos." });
 
     if (!password) return res.status(400).json({ message: 'Senha ou Usuário inválidos.' });
 
@@ -103,9 +102,10 @@ const userLogin = async (req, res) => {
         expiresIn: "5d",
       }
     );
+    
     res
-      .header("Authorization", token)
-      .send({ id: user.id, email, password: user.password, token });
+      .header("Authorization", `Bearer ${token}`)
+      .json({ id: user.id, email: user.email, token });
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: 'Erro no Servidor, tente novamente' });
