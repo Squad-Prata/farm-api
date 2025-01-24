@@ -129,7 +129,7 @@ Inicialmente faremos a migração de forma gradual, escrevendo os testes conform
 
 Para instalar o jest :
 ```bash
-npm install --save-dev jest
+npm install --save-dev jest @types/jest
 ```
 
 É necessário  instalar o ts-jest, que é um pré-processador TypeScript com suporte a mapa de origem para Jest que permite usar Jest para testar projetos escritos em TypeScript.
@@ -138,3 +138,14 @@ npm install --save-dev jest
 npm install --save-dev ts-jest
 ```
 
+Para criar o arquivo de configuração para utilização com TypeScript.
+
+```bash
+npx ts-jest config:init
+```
+
+10. Outras dependências que estão sendo necessárias durante a migração
+
+```bash
+npm install --save-dev @types/bcrypt
+```
