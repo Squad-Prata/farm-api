@@ -1,30 +1,21 @@
-import User from "../../src/domain/models/User";
+import User from "../../src/user/entity/User";
 
 test("Deve criar um Usuario", function () {
   const user = User.create('John Doe', '12345678910', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
   expect(user).toBeDefined();
   expect(user.id).toBe(0);
-  expect(user.ativo).toBe(false);
-  expect(user.password).not.toBe('abc123');
+  expect(user.getActive()).toBe(false);
+  expect(user.getHashPassword()).not.toBe('abc123');
 });
 
 test("Deve criar um Usuario sem CPF e com CRF", function () {
   const user = User.create('John Doe', '', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
-  expect(user).toBeDefined();
-  expect(user.id).toBe(0);
-  expect(user.ativo).toBe(false);
-  expect(user.password).not.toBe('abc123');
   expect(user.cpf).toBeFalsy();
   expect(user.crf).toBeDefined();
 });
 
-
 test("Deve criar um Usuario com CPF e sem CRF", function () {
   const user = User.create('John Doe', '12345678910', '', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
-  expect(user).toBeDefined();
-  expect(user.id).toBe(0);
-  expect(user.ativo).toBe(false);
-  expect(user.password).not.toBe('abc123');
   expect(user.cpf).toBeDefined();
   expect(user.crf).toBeFalsy();
 });
@@ -84,8 +75,29 @@ test("Não deve criar um Usuario com CRF inválido", function () {
 test("Deve validar a senha", function () {
   const user = User.create('John Doe', '12345678910', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
   expect(user).toBeDefined();
-  expect(user.id).toBe(0);
-  expect(user.ativo).toBe(false);
-  expect(user.password).not.toBe('abc123');
-  console.log(user.password);
+  expect(user.verifyPassword('123abc')).toBe(false);
+});
+
+test("Não deve validar a senha", function () {
+  const user = User.create('John Doe', '12345678910', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
+  expect(user).toBeDefined();
+  expect(user.verifyPassword('abc123')).toBe(true);
+});
+
+test("Deve trocar a senha", function () {
+  const user = User.create('John Doe', '12345678910', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
+  expect(user).toBeDefined();
+  const hashPassword = user.getHashPassword();
+  user.changePassword('123abc');
+  expect(user.getHashPassword()).not.toBe(hashPassword);
+});
+
+test("Deve ativar/desativar um Usuário", function () {
+  const user = User.create('John Doe', '12345678910', '123456', 'john.doe@gmail.com', 'abc123', 'cargo', 'admin', 0);
+  expect(user).toBeDefined();
+  expect(user.getActive()).toBe(false);
+  user.active();
+  expect(user.getActive()).toBe(true);
+  user.inactive();
+  expect(user.getActive()).toBe(false);
 });

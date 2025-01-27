@@ -148,4 +148,7 @@ npx ts-jest config:init
 
 ```bash
 npm install --save-dev @types/bcrypt
+npm i --save-dev @types/express @types/cors
+npm i --save-dev @types/multer 
+npm i --save-dev @types/jsonwebtoken
 ```
